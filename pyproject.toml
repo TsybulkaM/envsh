@@ -7,7 +7,7 @@ name = "envsh"
 version = "0.1.0"
 description = "A Python library for loading environment variables from shell scripts with type-safe reading capabilities"
 readme = "README.md"
-requires-python = ">=3.9"
+requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
     {name = "Envsh Contributors"}
@@ -24,8 +24,6 @@ classifiers = [
     "Operating System :: MacOS",
     "Operating System :: Unix",
     "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
     "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Topic :: Software Development :: Libraries :: Python Modules",
@@ -44,7 +42,6 @@ classifiers = [
 dev = [
     "pytest>=6.0",
     "pytest-cov>=2.0",
-    "ruff==0.0.285",
 ]
 
 [tool.setuptools.packages.find]
@@ -52,6 +49,24 @@ where = ["src"]
 
 [tool.setuptools.package-dir]
 "" = "src"
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
+exclude = [
+    ".git",
+    "__pycache__",
+    "build",
+    "dist",
+    ".venv",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".pytest_cache",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+ignore = ["E501"]
 
 [tool.black]
 line-length = 88
@@ -78,7 +93,7 @@ line_length = 88
 known_first_party = ["envsh"]
 
 [tool.mypy]
-python_version = "3.7"
+python_version = 3.11
 warn_return_any = true
 warn_unused_configs = true
 disallow_untyped_defs = true
@@ -98,4 +113,6 @@ addopts = "-v --tb=short"
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4.1"
+ruff = "^0.12.8"
+mypy = "^1.17.1"
 

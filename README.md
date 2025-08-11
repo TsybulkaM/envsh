@@ -25,7 +25,7 @@ export CONFIG_ARRAY="value1,$HOST,value3,port-$BASE_PORT"
 
 - **Variable Interpolation**: Use `$VAR` and `${VAR}` syntax like in shell scripts
 - **Shell Calculations**: Support for `$((...))` arithmetic and `$(command)` execution
-- **Type-safe Reading**: Convert to `int`, `str`, `List[int]`, `List[str]` with validation
+- **Type-safe Reading**: Convert to `int`, `float`, `str`, `list[int]`, `list[str]` with validation
 - **Smart Array Parsing**: Comma-separated values with automatic trimming
 - **Multi-directory Search**: Load from multiple directories automatically
 - **Error Handling**: Clear error messages for debugging
@@ -57,19 +57,18 @@ export SERVICE_URLS="http://$HOST:$BASE_PORT,https://$HOST:8443"
 
 ```python
 import envsh
-from typing import List
 
 # Load environment variables with interpolation
-envsh.load(['.'])
+envsh.load()
 
 # Read interpolated values
 database_url = envsh.read_env('DATABASE_URL', str)
 # Result: "postgresql://localhost:5432/myapp"
 
-worker_ports = envsh.read_env('WORKER_PORTS', List[int])  
+worker_ports = envsh.read_env('WORKER_PORTS', list[int])  
 # Result: [8000, 8001, 8002] - calculated from BASE_PORT!
 
-service_urls = envsh.read_env('SERVICE_URLS', List[str])
+service_urls = envsh.read_env('SERVICE_URLS', list[str])
 # Result: ["http://localhost:8000", "https://localhost:8443"]
 ```
 
@@ -81,7 +80,7 @@ service_urls = envsh.read_env('SERVICE_URLS', List[str])
 | Calculations | ❌ No | ✅ `$(($VAR + 1))` |
 | Command execution | ❌ No | ✅ `$(date)`, `$(nproc)` |
 | Dynamic arrays | ❌ No | ✅ `"$VAR1,$VAR2,suffix"` |
-| Type safety | ❌ Strings only | ✅ int, str, List[int], List[str] |
+| Type safety | ❌ Strings only | ✅ int, float, str, list[int], list[str] |
 | Array parsing | ❌ Manual | ✅ Automatic comma-split |
 
 ## API Reference
@@ -91,7 +90,7 @@ service_urls = envsh.read_env('SERVICE_URLS', List[str])
 Loads environment variables from `.sh` files in the specified directories.
 
 **Parameters:**
-- `search_paths` (List[str], optional): Directories to search for `.sh` files. Defaults to `['.', '..']`
+- `search_paths` (list[str], optional): Directories to search for `.sh` files. Defaults to `['.', '..']`
 - `verbose` (bool, optional): Print information about loaded files. Defaults to `False`
 
 **Example:**
@@ -109,7 +108,7 @@ Reads an environment variable with the specified type.
 
 **Parameters:**
 - `name` (str): Name of the environment variable
-- `return_type` (Type): Expected return type (`int`, `str`, `List[int]`, or `List[str]`)
+- `return_type` (Type): Expected return type (`int`, `float`, `str`, `list[int]`, or `list[str]`)
 
 **Returns:**
 - The environment variable value converted to the specified type
@@ -128,10 +127,10 @@ port = envsh.read_env('PORT', int)
 host = envsh.read_env('HOST', str)
 
 # Read as integer array (comma-separated)
-ports = envsh.read_env('PORTS', List[int])  # "8000,8001,8002" -> [8000, 8001, 8002]
+ports = envsh.read_env('PORTS', list[int])  # "8000,8001,8002" -> [8000, 8001, 8002]
 
 # Read as string array (comma-separated)
-hosts = envsh.read_env('HOSTS', List[str])  # "localhost,example.com" -> ["localhost", "example.com"]
+hosts = envsh.read_env('HOSTS', list[str])  # "localhost,example.com" -> ["localhost", "example.com"]
 ```
 
 ## Variable Interpolation Examples
@@ -178,7 +177,7 @@ except ValueError as e:
 
 # Unsupported type
 try:
-    value = envsh.read_env('SOME_VAR', float)  # float not supported
+    value = envsh.read_env('SOME_VAR', dict)
 except TypeError as e:
     print(f"Type error: {e}")
 ```

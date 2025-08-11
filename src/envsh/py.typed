@@ -1,11 +1,11 @@
 """Type definitions for envsh library."""
 
-from typing import List, Type, Union, overload
+from typing import list, Type, Union, overload
 from typing_extensions import Literal
 
 # Supported return types
-SupportedTypes = Union[Type[int], Type[float], Type[str], Type[List[int]], Type[List[str]]]
-SupportedValues = Union[int, float, str, List[int], List[str]]
+SupportedTypes = Union[Type[int], Type[float], Type[str], Type[list[int]], Type[list[str]]]
+SupportedValues = Union[int, float, str, list[int], list[str]]
 
 # Type overloads for read_env function
 @overload
@@ -18,7 +18,7 @@ def read_env(name: str, return_type: Type[float]) -> float: ...
 def read_env(name: str, return_type: Type[str]) -> str: ...
 
 @overload
-def read_env(name: str, return_type: Type[List[int]]) -> List[int]: ...
+def read_env(name: str, return_type: Type[list[int]]) -> list[int]: ...
 
 @overload
-def read_env(name: str, return_type: Type[List[str]]) -> List[str]: ...
+def read_env(name: str, return_type: Type[list[str]]) -> list[str]: ...

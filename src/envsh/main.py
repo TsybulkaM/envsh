@@ -1,8 +1,9 @@
-import subprocess
 import inspect
 import os
+import subprocess
 from pathlib import Path
-from typing import List, Optional, Type, Union, overload
+from typing import get_args, get_origin, overload
+
 
 def _apply_shell_environment(script_path: Path) -> None:
     """Applies environment variables from shell script to current process."""
@@ -25,9 +26,10 @@ def _apply_shell_environment(script_path: Path) -> None:
                 key, value = var_line.split('=', 1)
                 os.environ[key] = value
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        raise RuntimeError(f"Failed to load environment from {script_path}: {e}")
+        raise RuntimeError(f"Failed to load environment from {script_path}: {e}") from e
 
-def load(search_paths: Optional[List[str]] = None, verbose: bool = False) -> bool:
+
+def load(search_paths: list[str] | None = None, verbose: bool = False) -> bool:
     """Loads environment variables from .sh files in specified directories."""
     frame = inspect.currentframe()
     caller_frame = frame.f_back if frame else None
@@ -69,61 +71,67 @@ def load(search_paths: Optional[List[str]] = None, verbose: bool = False) -> boo
         try:
             _apply_shell_environment(file_path)
         except Exception as e:
-            raise RuntimeError(f"Failed to load environment from {file_path}: {e}")
+            raise RuntimeError(f"Failed to load environment from {file_path}: {e}") from e
 
     return True
 
+
 # Type overloads for proper typing
 @overload
-def read_env(name: str, return_type: Type[int]) -> int: ...
+def read_env(name: str, return_type: type[int]) -> int: ...
 
 @overload
-def read_env(name: str, return_type: Type[float]) -> float: ...
+def read_env(name: str, return_type: type[float]) -> float: ...
 
 @overload
-def read_env(name: str, return_type: Type[str]) -> str: ...
+def read_env(name: str, return_type: type[str]) -> str: ...
 
 @overload
-def read_env(name: str, return_type: Type[List[int]]) -> List[int]: ...
+def read_env(name: str, return_type: type[list[int]]) -> list[int]: ...
 
 @overload
-def read_env(name: str, return_type: Type[List[str]]) -> List[str]: ...
+def read_env(name: str, return_type: type[list[str]]) -> list[str]: ...
 
 
-def read_env(name: str, return_type: Type[Union[int, str, List[int], List[str], float]]) -> Union[int, str, List[int], List[str], float]:
+def read_env(
+    name: str,
+    return_type: type[int | str | list[int] | list[str] | float]
+) -> int | str | list[int] | list[str] | float:
     """Reads environment variable with specified return type."""
     value = os.getenv(name)
     if value is None:
-        raise EnvironmentError(f"The environment variable '{name}' is not set.")
+        raise OSError(f"The environment variable '{name}' is not set.")
+
+    origin = get_origin(return_type)
+    args = get_args(return_type)
 
     if return_type is int:
         try:
             return int(value)
         except ValueError:
-            raise ValueError(f"The environment variable '{name}' contains non-integer value: '{value}'")
-        
+            raise ValueError(f"The environment variable '{name}' contains non-integer value: '{value}'") from None
     elif return_type is float:
         try:
             return float(value)
         except ValueError:
-            raise ValueError(f"The environment variable '{name}' contains non-float value: '{value}'")
-
+            raise ValueError(f"The environment variable '{name}' contains non-float value: '{value}'") from None
     elif return_type is str:
         return str(value)
-
-    elif return_type is List[int]:
-        if not value.strip():
-            return []
-        try:
-            return [int(item.strip()) for item in value.split(',') if item.strip()]
-        except ValueError:
-            raise ValueError(f"The environment variable '{name}' contains non-integer values: '{value}'")
-
-    elif return_type is List[str]:
-        if not value.strip():
-            return []
-        return [item.strip() for item in value.split(',') if item.strip()]
-
+    elif origin is list and args:
+        subtype = args[0]
+        if subtype is int:
+            if not value.strip():
+                return []
+            try:
+                return [int(item.strip()) for item in value.split(',') if item.strip()]
+            except ValueError:
+                raise ValueError(f"The environment variable '{name}' contains non-integer values: '{value}'") from None
+        elif subtype is str:
+            if not value.strip():
+                return []
+            return [item.strip() for item in value.split(',') if item.strip()]
+        else:
+            raise TypeError(f"Unsupported list subtype: {subtype}")
     else:
         raise TypeError(f"Unsupported return type: {return_type}")
 

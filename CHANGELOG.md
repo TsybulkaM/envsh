@@ -11,7 +11,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Initial release of envsh library
 - `load()` function to load environment variables from .sh files
 - `read_env()` function with type-safe reading capabilities
-- Support for int, float, str, List[int], and List[str] types
+- Support for int, float, str, list[int], and list[str] types
 - Automatic type conversion and validation
 - Array parsing from comma-separated values
 - Comprehensive error handling

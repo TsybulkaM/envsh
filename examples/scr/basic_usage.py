@@ -1,10 +1,10 @@
-# Example usage of envsh library - demonstrating variable interpolation advantage
 import sys
 from pathlib import Path
+
 sys.path.insert(0, str(Path(__file__).parent.parent / "src"))
+# Example usage of envsh library - demonstrating variable interpolation advantage
 
 import envsh
-from typing import List
 
 print("=== Envsh: Shell Variable Interpolation Demo ===")
 print("The main advantage over .env files: full shell variable interpolation!\n")
@@ -46,9 +46,9 @@ print(f"FULL_APP_ID: {full_app_id}")
 print("  -> Built with date command: $APP_NAME-$(date +%Y%m%d)")
 
 print("\n=== Interpolated Arrays ===")
-worker_ports = envsh.read_env('WORKER_PORTS', List[int])
-service_urls = envsh.read_env('SERVICE_URLS', List[str])
-port_range = envsh.read_env('PORT_RANGE', List[int])
+worker_ports = envsh.read_env('WORKER_PORTS', list[int])
+service_urls = envsh.read_env('SERVICE_URLS', list[str])
+port_range = envsh.read_env('PORT_RANGE', list[int])
 
 print(f"WORKER_PORTS: {worker_ports}")
 print("  -> Calculated ports: $BASE_PORT,$(($BASE_PORT + 1)),$(($BASE_PORT + 2))")
