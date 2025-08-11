@@ -55,7 +55,7 @@ class TestEnvsh(unittest.TestCase):
         with self.assertRaises(ValueError):
             envsh.read_env('TEST_INVALID_INT_ARRAY', list[int])
         with self.assertRaises(TypeError):
-            envsh.read_env('TEST_STR_ARRAY', dict)
+            envsh.read_env('TEST_STR_ARRAY', dict) # type: ignore[arg-type]
 
     def test_special_and_dynamic(self) -> None:
         """Test special characters and dynamic strings."""
