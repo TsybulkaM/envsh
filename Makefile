@@ -38,7 +38,7 @@ clean:
 	rm -rf .coverage
 
 build: clean
-	poetry run python -m build
+	poetry build
 
-upload: build
-	poetry run python -m twine upload dist/*
+upload:
+	poetry publish --build

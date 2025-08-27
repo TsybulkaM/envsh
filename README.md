@@ -191,8 +191,9 @@ except TypeError as e:
 
 ## Requirements
 
-- Python 3.7+
+- Python 3.11+
 - Unix-like system with Bash (Linux, macOS)
+- Windows: Git Bash or MSYS2
 
 ## Contributing
 
