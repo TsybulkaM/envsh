@@ -31,7 +31,7 @@ poetry shell
 
 If you don't have pytest installed, add it to your development dependencies:
 ```bash
-poetry add --dev pytest
+poetry install --with dev
 ```
 or `make install-dev`
 

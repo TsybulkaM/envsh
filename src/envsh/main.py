@@ -1,5 +1,6 @@
 import inspect
 import os
+import shutil
 import subprocess
 from pathlib import Path
 from typing import get_args, get_origin, overload
@@ -7,12 +8,20 @@ from typing import get_args, get_origin, overload
 
 def _apply_shell_environment(script_path: Path) -> None:
     """Applies environment variables from shell script to current process."""
-    command = f"source {script_path.resolve()} > /dev/null && printenv -0"
     try:
+        if os.name == "nt":
+            executable = shutil.which("bash")
+            if not executable:
+                raise RuntimeError("bash.exe not founded. Install Git Bash or MSYS2 and add to PATH.")
+            unix_path = str(script_path.resolve()).replace('\\', '/').replace('C:', '/c')
+            command = [executable, "-c", f"source '{unix_path}' 2>/dev/null && printenv -0"]
+        elif os.name == "posix":
+            executable = '/bin/bash'
+            command = [executable, "-c", f"source '{script_path.resolve()}' > /dev/null && printenv -0"]
+
         result = subprocess.run(
             command,
-            shell=True,
-            executable='/bin/bash',
+            shell=False,
             capture_output=True,
             check=True,
             text=False
@@ -26,7 +35,7 @@ def _apply_shell_environment(script_path: Path) -> None:
                 key, value = var_line.split('=', 1)
                 os.environ[key] = value
     except (subprocess.CalledProcessError, FileNotFoundError) as e:
-        raise RuntimeError(f"Failed to load environment from {script_path}: {e}") from e
+        raise RuntimeError(f"Failed to load using {executable} environment from {script_path}: {e}") from e
 
 
 def load(search_paths: list[str] | None = None, verbose: bool = False) -> bool:
