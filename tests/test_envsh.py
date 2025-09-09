@@ -24,6 +24,11 @@ class TestEnvsh(unittest.TestCase):
         self.assertEqual(envsh.read_env('TEST_STR', str), 'Hello, World!')
         self.assertEqual(envsh.read_env('TEST_INT_ARRAY', list[int]), [1, 123, 3, 4, 5])
         self.assertEqual(envsh.read_env('TEST_STR_ARRAY', list[str]), ['foo', 'Hello', 'World!', 'baz'])
+        self.assertEqual(envsh.read_env('TEST_DICT_JSON', dict), {
+            "key1": "value1",
+            "key2": "Hello, World!",
+            "key3": "value3",
+        })
 
     def test_interpolation_and_calculation(self) -> None:
         """Test interpolation and calculations in environment variables."""
@@ -33,15 +38,18 @@ class TestEnvsh(unittest.TestCase):
         str_array = envsh.read_env('TEST_STR_ARRAY', list[str])
         mixed_array = envsh.read_env('TEST_MIXED_INTERPOLATION', list[str])
         calc_array = envsh.read_env('TEST_CALCULATED_ARRAY', list[int])
+        json_dict = envsh.read_env('TEST_DICT_JSON', dict)
         self.assertIn(base_int, int_array)
         self.assertIn(base_str.split(',')[0], str_array)
         self.assertTrue(any("base" in item for item in mixed_array))
         self.assertEqual(calc_array, [123, 133, 246])
+        self.assertEqual(json_dict.get("key2"), base_str)
 
     def test_empty_and_spaces(self) -> None:
         """Test handling of empty values and spaces."""
         self.assertEqual(envsh.read_env('TEST_EMPTY_STR', str), '')
         self.assertEqual(envsh.read_env('TEST_EMPTY_ARRAY', list[str]), [])
+        self.assertEqual(envsh.read_env('TEST_EMPTY_DICT_JSON', dict), {})
         self.assertEqual(envsh.read_env('TEST_SPACES_ARRAY', list[str]), ['apple', 'banana', 'cherry'])
 
     def test_errors(self) -> None:
@@ -55,7 +63,7 @@ class TestEnvsh(unittest.TestCase):
         with self.assertRaises(ValueError):
             envsh.read_env('TEST_INVALID_INT_ARRAY', list[int])
         with self.assertRaises(TypeError):
-            envsh.read_env('TEST_STR_ARRAY', dict) # type: ignore[arg-type]
+            envsh.read_env('TEST_STR_ARRAY', frozenset) # type: ignore[arg-type]
 
     def test_special_and_dynamic(self) -> None:
         """Test special characters and dynamic strings."""

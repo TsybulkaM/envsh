@@ -19,11 +19,11 @@ install-dev:
 	poetry install --with dev
 
 test:
-	poetry run pytest tests/ -v
+	poetry run pytest tests/ -v -s
 
 lint:
-	ruff check --fix .
-	mypy src tests
+	poetry run ruff check --fix .
+	poetry run mypy src tests
 
 clean:
 	rm -rf build/
