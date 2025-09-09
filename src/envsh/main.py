@@ -1,9 +1,15 @@
 import inspect
+import json
 import os
 import shutil
 import subprocess
 from pathlib import Path
 from typing import get_args, get_origin, overload
+
+
+def _get_utils_path() -> Path:
+    """Returns the path to envsh-utils.sh script for shell scripts."""
+    return Path(__file__).parent / "envsh-utils.sh"
 
 
 def _apply_shell_environment(script_path: Path) -> None:
@@ -14,10 +20,10 @@ def _apply_shell_environment(script_path: Path) -> None:
             if not executable:
                 raise RuntimeError("bash.exe not founded. Install Git Bash or MSYS2 and add to PATH.")
             unix_path = str(script_path.resolve()).replace('\\', '/').replace('C:', '/c')
-            command = [executable, "-c", f"source '{unix_path}' 2>/dev/null && printenv -0"]
+            command = [executable, "-c", f"source '{_get_utils_path()}' && source '{unix_path}' 2>/dev/null && printenv -0"]
         elif os.name == "posix":
             executable = '/bin/bash'
-            command = [executable, "-c", f"source '{script_path.resolve()}' > /dev/null && printenv -0"]
+            command = [executable, "-c", f"source '{_get_utils_path()}' && source '{script_path.resolve()}' > /dev/null && printenv -0"]
 
         result = subprocess.run(
             command,
@@ -101,11 +107,14 @@ def read_env(name: str, return_type: type[list[int]]) -> list[int]: ...
 @overload
 def read_env(name: str, return_type: type[list[str]]) -> list[str]: ...
 
+@overload
+def read_env(name: str, return_type: type[dict]) -> dict: ...
+
 
 def read_env(
     name: str,
-    return_type: type[int | str | list[int] | list[str] | float]
-) -> int | str | list[int] | list[str] | float:
+    return_type: type[int | str | list[int] | list[str] | float | dict]
+) -> int | str | list[int] | list[str] | float | dict:
     """Reads environment variable with specified return type."""
     value = os.getenv(name)
     if value is None:
@@ -141,6 +150,11 @@ def read_env(
             return [item.strip() for item in value.split(',') if item.strip()]
         else:
             raise TypeError(f"Unsupported list subtype: {subtype}")
+    elif return_type is dict:
+        try:
+            return dict(json.loads(value))
+        except json.JSONDecodeError:
+            raise ValueError(f"The environment variable '{name}' contains invalid JSON: '{value}'") from None
     else:
         raise TypeError(f"Unsupported return type: {return_type}")
 
