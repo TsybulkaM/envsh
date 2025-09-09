@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "envsh"
-version = "0.1.1"
+version = "0.1.2"
 description = "A Python library for loading environment variables from shell scripts with type-safe reading capabilities"
 readme = "README.md"
 requires-python = ">=3.11"
