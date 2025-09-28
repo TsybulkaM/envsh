@@ -16,12 +16,15 @@ envsh.load(['..'])
 
 print("\n=== Basic Variables ===")
 base_port = envsh.read_env('BASE_PORT', int)
-host = envsh.read_env('HOST', str)
-db_name = envsh.read_env('DB_NAME', str)
+host = envsh.read_env('HOST')
+db_name = envsh.read_env('DB_NAME')
+# DEBUG_MODE will use default value as it's not set in env.sh, for reducing boilerplate 
+DEBUG_MODE = envsh.read_env('DEBUG_MODE', default=False)
 
 print(f"BASE_PORT: {base_port}")
 print(f"HOST: {host}")
 print(f"DB_NAME: {db_name}")
+print(f"DEBUG_MODE: {DEBUG_MODE}")
 
 print("\n=== Configuration Structures (JSON from Bash Associative Arrays) ===")
 # Read configuration structures exported as JSON
@@ -72,10 +75,10 @@ print(f"MQTT Connection: {mqtt_conn_str}")
 
 print("\n=== Interpolated Variables ===")
 # These values were created using shell variable interpolation
-database_url = envsh.read_env('DATABASE_URL', str)
-redis_url = envsh.read_env('REDIS_URL', str)
-mqtt_url = envsh.read_env('MQTT_URL', str)
-api_endpoint = envsh.read_env('API_ENDPOINT', str)
+database_url = envsh.read_env('DATABASE_URL')
+redis_url = envsh.read_env('REDIS_URL')
+mqtt_url = envsh.read_env('MQTT_URL')
+api_endpoint = envsh.read_env('API_ENDPOINT')
 
 print(f"DATABASE_URL: {database_url}")
 print("  -> Built from: postgresql://${DB_CONFIG[USER]}:${DB_CONFIG[PASSWORD]}@${DB_CONFIG[HOST]}:${DB_CONFIG[PORT]}/${DB_CONFIG[NAME]}")
@@ -89,7 +92,7 @@ print("  -> Built from: http://$HOST:$BASE_PORT/api")
 print("\n=== Complex Interpolation ===")
 cache_size = envsh.read_env('CACHE_SIZE', int)
 max_workers = envsh.read_env('MAX_WORKERS', int)
-full_app_id = envsh.read_env('FULL_APP_ID', str)
+full_app_id = envsh.read_env('FULL_APP_ID')
 
 print(f"CACHE_SIZE: {cache_size} bytes")
 print("  -> Calculated with: $((1024 * 1024))")

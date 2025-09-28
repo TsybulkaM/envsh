@@ -30,6 +30,15 @@ class TestEnvsh(unittest.TestCase):
             "key3": "value3",
         })
 
+    def test_default_values(self) -> None:
+        """Test default values for missing variables."""
+        self.assertEqual(envsh.read_env('NONEXISTENT_STR', str, default='default'), 'default')
+        self.assertEqual(envsh.read_env('NONEXISTENT_INT', int, default=42), 42)
+        self.assertEqual(envsh.read_env('NONEXISTENT_FLOAT', float, default=3.14), 3.14)
+        self.assertEqual(envsh.read_env('NONEXISTENT_INT_ARRAY', list[int], default=[7, 8, 9]), [7, 8, 9])
+        self.assertEqual(envsh.read_env('NONEXISTENT_STR_ARRAY', list[str], default=['a', 'b', 'c']), ['a', 'b', 'c'])
+        self.assertEqual(envsh.read_env('NONEXISTENT_DICT_JSON', dict, default={"a": 1}), {"a": 1})
+
     def test_interpolation_and_calculation(self) -> None:
         """Test interpolation and calculations in environment variables."""
         base_int = envsh.read_env('TEST_INT', int)

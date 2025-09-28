@@ -3,8 +3,9 @@ import json
 import os
 import shutil
 import subprocess
+import warnings
 from pathlib import Path
-from typing import get_args, get_origin, overload
+from typing import Any, get_args, get_origin, overload
 
 
 def _get_utils_path() -> Path:
@@ -93,31 +94,54 @@ def load(search_paths: list[str] | None = None, verbose: bool = False) -> bool:
 
 # Type overloads for proper typing
 @overload
-def read_env(name: str, return_type: type[int]) -> int: ...
+def read_env(name: str, return_type: type[int], default: int | None = None) -> int: ...
 
 @overload
-def read_env(name: str, return_type: type[float]) -> float: ...
+def read_env(name: str, return_type: type[float], default: float | None = None) -> float: ...
 
 @overload
-def read_env(name: str, return_type: type[str]) -> str: ...
+def read_env(name: str, return_type: type[str], default: str | None = None) -> str: ...
 
 @overload
-def read_env(name: str, return_type: type[list[int]]) -> list[int]: ...
+def read_env(name: str, return_type: type[list[int]], default: list[int] | None = None) -> list[int]: ...
 
 @overload
-def read_env(name: str, return_type: type[list[str]]) -> list[str]: ...
+def read_env(name: str, return_type: type[list[str]], default: list[str] | None = None) -> list[str]: ...
 
 @overload
-def read_env(name: str, return_type: type[dict]) -> dict: ...
+def read_env(name: str, return_type: type[dict[Any, Any]], default: dict[Any, Any] | None = None) -> dict[Any, Any]: ...
 
 
 def read_env(
     name: str,
-    return_type: type[int | str | list[int] | list[str] | float | dict]
-) -> int | str | list[int] | list[str] | float | dict:
+    return_type: type = str,
+    default: Any = None
+) -> int | str | list[int] | list[str] | float | dict[Any, Any]:
     """Reads environment variable with specified return type."""
     value = os.getenv(name)
     if value is None:
+        if default is not None:
+            warnings.warn(
+                f"Environment variable '{name}' is not set. Returning default value: {default!r}",
+                stacklevel=2
+            )
+            if return_type is int:
+                return int(default) if default is not None else 0
+            elif return_type is float:
+                return float(default) if default is not None else 0.0
+            elif return_type is str:
+                return str(default) if default is not None else ""
+            origin = get_origin(return_type)
+            args = get_args(return_type)
+            if origin is list and args:
+                subtype = args[0]
+                if subtype is int:
+                    return list(default) if default is not None else []
+                elif subtype is str:
+                    return list(default) if default is not None else []
+            elif return_type is dict:
+                return dict(default) if default is not None else {}
+            raise TypeError(f"Unsupported return type: {return_type}")
         raise OSError(f"The environment variable '{name}' is not set.")
 
     origin = get_origin(return_type)
