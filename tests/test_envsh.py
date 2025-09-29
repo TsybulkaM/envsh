@@ -21,6 +21,7 @@ class TestEnvsh(unittest.TestCase):
         """Test reading variables of different types and arrays."""
         self.assertEqual(envsh.read_env('TEST_INT', int), 123)
         self.assertEqual(envsh.read_env('TEST_FLOAT', float), 45.67)
+        self.assertEqual(envsh.read_env('TEST_STR'), 'Hello, World!')
         self.assertEqual(envsh.read_env('TEST_STR', str), 'Hello, World!')
         self.assertEqual(envsh.read_env('TEST_INT_ARRAY', list[int]), [1, 123, 3, 4, 5])
         self.assertEqual(envsh.read_env('TEST_STR_ARRAY', list[str]), ['foo', 'Hello', 'World!', 'baz'])

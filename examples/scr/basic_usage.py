@@ -19,7 +19,7 @@ base_port = envsh.read_env('BASE_PORT', int)
 host = envsh.read_env('HOST')
 db_name = envsh.read_env('DB_NAME')
 # DEBUG_MODE will use default value as it's not set in env.sh, for reducing boilerplate 
-DEBUG_MODE = envsh.read_env('DEBUG_MODE', default=False)
+DEBUG_MODE = envsh.read_env('DEBUG_MODE', int, default=0)
 
 print(f"BASE_PORT: {base_port}")
 print(f"HOST: {host}")
@@ -52,16 +52,16 @@ print("  -> Pool Size:", redis_config['POOL_SIZE'])
 
 print("\n=== Using Configuration Structures ===")
 # Demonstrate practical usage of configuration structures
-def create_database_connection_string(config):
+def create_database_connection_string(config: dict) -> str:
     """Create database connection string from config structure."""
     return f"postgresql://{config['USER']}:{config['PASSWORD']}@{config['HOST']}:{config['PORT']}/{config['NAME']}?sslmode={config['SSL_MODE']}"
 
-def create_redis_connection_string(config):
+def create_redis_connection_string(config: dict) -> str:
     """Create Redis connection string from config structure."""
     password_part = f":{config['PASSWORD']}@" if config['PASSWORD'] else ""
     return f"redis://{password_part}{config['HOST']}:{config['PORT']}/{config['DATABASE']}"
 
-def create_mqtt_connection_string(config):
+def create_mqtt_connection_string(config: dict) -> str:
     """Create MQTT connection string from config structure."""
     return f"mqtt://{config['USERNAME']}:{config['PASSWORD']}@{config['HOST']}:{config['PORT']}"
 

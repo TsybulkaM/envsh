@@ -93,6 +93,13 @@ def load(search_paths: list[str] | None = None, verbose: bool = False) -> bool:
 
 
 # Type overloads for proper typing
+
+@overload
+def read_env(name: str) -> str: ...
+
+@overload
+def read_env(name: str, default: str | None = None) -> str: ...
+
 @overload
 def read_env(name: str, return_type: type[int], default: int | None = None) -> int: ...
 
@@ -112,6 +119,7 @@ def read_env(name: str, return_type: type[list[str]], default: list[str] | None 
 def read_env(name: str, return_type: type[dict[Any, Any]], default: dict[Any, Any] | None = None) -> dict[Any, Any]: ...
 
 
+# type: ignore[misc]
 def read_env(
     name: str,
     return_type: type = str,
