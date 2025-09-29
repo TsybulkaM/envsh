@@ -23,7 +23,7 @@ test:
 
 lint:
 	poetry run ruff check --fix .
-	poetry run mypy src tests
+	poetry run mypy src tests examples
 
 clean:
 	rm -rf build/

@@ -21,6 +21,7 @@ class TestEnvsh(unittest.TestCase):
         """Test reading variables of different types and arrays."""
         self.assertEqual(envsh.read_env('TEST_INT', int), 123)
         self.assertEqual(envsh.read_env('TEST_FLOAT', float), 45.67)
+        self.assertEqual(envsh.read_env('TEST_STR'), 'Hello, World!')
         self.assertEqual(envsh.read_env('TEST_STR', str), 'Hello, World!')
         self.assertEqual(envsh.read_env('TEST_INT_ARRAY', list[int]), [1, 123, 3, 4, 5])
         self.assertEqual(envsh.read_env('TEST_STR_ARRAY', list[str]), ['foo', 'Hello', 'World!', 'baz'])
@@ -29,6 +30,15 @@ class TestEnvsh(unittest.TestCase):
             "key2": "Hello, World!",
             "key3": "value3",
         })
+
+    def test_default_values(self) -> None:
+        """Test default values for missing variables."""
+        self.assertEqual(envsh.read_env('NONEXISTENT_STR', str, default='default'), 'default')
+        self.assertEqual(envsh.read_env('NONEXISTENT_INT', int, default=42), 42)
+        self.assertEqual(envsh.read_env('NONEXISTENT_FLOAT', float, default=3.14), 3.14)
+        self.assertEqual(envsh.read_env('NONEXISTENT_INT_ARRAY', list[int], default=[7, 8, 9]), [7, 8, 9])
+        self.assertEqual(envsh.read_env('NONEXISTENT_STR_ARRAY', list[str], default=['a', 'b', 'c']), ['a', 'b', 'c'])
+        self.assertEqual(envsh.read_env('NONEXISTENT_DICT_JSON', dict, default={"a": 1}), {"a": 1})
 
     def test_interpolation_and_calculation(self) -> None:
         """Test interpolation and calculations in environment variables."""

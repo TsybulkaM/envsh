@@ -80,7 +80,7 @@ service_urls = envsh.read_env('SERVICE_URLS', list[str])
 | Calculations | ❌ No | ✅ `$(($VAR + 1))` |
 | Command execution | ❌ No | ✅ `$(date)`, `$(nproc)` |
 | Dynamic arrays | ❌ No | ✅ `"$VAR1,$VAR2,suffix"` |
-| Type safety | ❌ Strings only | ✅ int, float, str, list[int], list[str] |
+| Type safety | ❌ Strings only | ✅ int, float, str, list[int], list[str], dict |
 | Array parsing | ❌ Manual | ✅ Automatic comma-split |
 
 ## API Reference
@@ -102,13 +102,14 @@ envsh.load()
 envsh.load(['./config', './env'], verbose=True)
 ```
 
-### `read_env(name, return_type)`
+### `read_env(name, return_type, default=None)`
 
 Reads an environment variable with the specified type.
 
 **Parameters:**
 - `name` (str): Name of the environment variable
-- `return_type` (Type): Expected return type (`int`, `float`, `str`, `list[int]`, or `list[str]`)
+- `return_type` (Type, optional): Expected return type (`int`, `float`, `str`, `list[int]`, `list[str]`, or `dict`). If omitted, defaults to `str`.
+- `default` (optional): Value to return if the variable is not set
 
 **Returns:**
 - The environment variable value converted to the specified type
@@ -131,6 +132,12 @@ ports = envsh.read_env('PORTS', list[int])  # "8000,8001,8002" -> [8000, 8001, 8
 
 # Read as string array (comma-separated)
 hosts = envsh.read_env('HOSTS', list[str])  # "localhost,example.com" -> ["localhost", "example.com"]
+
+# You can omit the type: defaults to str
+api_url = envsh.read_env('API_URL')  # Equivalent to envsh.read_env('API_URL', str)
+
+# Read as string, with default fallback
+api_url = envsh.read_env('API_URL', default='http://localhost/api')  # Will show a warning if API_URL is not set
 ```
 
 ## Variable Interpolation Examples
