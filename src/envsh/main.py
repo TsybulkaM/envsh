@@ -119,8 +119,7 @@ def read_env(name: str, return_type: type[list[str]], default: list[str] | None 
 def read_env(name: str, return_type: type[dict[Any, Any]], default: dict[Any, Any] | None = None) -> dict[Any, Any]: ...
 
 
-# type: ignore[misc]
-def read_env(
+def read_env( # type: ignore[misc]
     name: str,
     return_type: type = str,
     default: Any = None
