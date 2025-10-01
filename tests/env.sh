@@ -19,6 +19,7 @@ export_array_as_json TEST_DICT 2>/dev/null || true
 # Variable interpolation in arrays - this is the key advantage!
 export TEST_INT_ARRAY="1,$TEST_INT,3,4,5"
 export TEST_STR_ARRAY="foo,$TEST_STR,baz"
+export TEST_FLOAT_ARRAY="1.00,$TEST_FLOAT,45.1"
 export TEST_MIXED_INTERPOLATION="prefix-$TEST_BASE_VALUE,value-$TEST_INT,suffix"
 
 # Complex interpolation examples

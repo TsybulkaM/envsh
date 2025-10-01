@@ -116,6 +116,9 @@ def read_env(name: str, return_type: type[list[int]], default: list[int] | None 
 def read_env(name: str, return_type: type[list[str]], default: list[str] | None = None) -> list[str]: ...
 
 @overload
+def read_env(name: str, return_type: type[list[float]], default: list[float] | None = None) -> list[float]: ...
+
+@overload
 def read_env(name: str, return_type: type[dict[Any, Any]], default: dict[Any, Any] | None = None) -> dict[Any, Any]: ...
 
 
@@ -123,7 +126,7 @@ def read_env( # type: ignore[misc]
     name: str,
     return_type: type = str,
     default: Any = None
-) -> int | str | list[int] | list[str] | float | dict[Any, Any]:
+) -> int | str | list[int] | list[str] | float | list[float] | dict[Any, Any]:
     """Reads environment variable with specified return type."""
     value = os.getenv(name)
     if value is None:
@@ -145,6 +148,8 @@ def read_env( # type: ignore[misc]
                 if subtype is int:
                     return list(default) if default is not None else []
                 elif subtype is str:
+                    return list(default) if default is not None else []
+                elif subtype is float:
                     return list(default) if default is not None else []
             elif return_type is dict:
                 return dict(default) if default is not None else {}
@@ -179,6 +184,13 @@ def read_env( # type: ignore[misc]
             if not value.strip():
                 return []
             return [item.strip() for item in value.split(',') if item.strip()]
+        elif subtype is float:
+            if not value.strip():
+                return []
+            try:
+                return [float(item.strip()) for item in value.split(',') if item.strip()]
+            except ValueError:
+                raise ValueError(f"The environment variable '{name}' contains non-float values: '{value}'") from None
         else:
             raise TypeError(f"Unsupported list subtype: {subtype}")
     elif return_type is dict:
