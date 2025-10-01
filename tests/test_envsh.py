@@ -25,6 +25,7 @@ class TestEnvsh(unittest.TestCase):
         self.assertEqual(envsh.read_env('TEST_STR', str), 'Hello, World!')
         self.assertEqual(envsh.read_env('TEST_INT_ARRAY', list[int]), [1, 123, 3, 4, 5])
         self.assertEqual(envsh.read_env('TEST_STR_ARRAY', list[str]), ['foo', 'Hello', 'World!', 'baz'])
+        self.assertEqual(envsh.read_env('TEST_FLOAT_ARRAY', list[float]), [1.00, 45.67, 45.1])
         self.assertEqual(envsh.read_env('TEST_DICT_JSON', dict), {
             "key1": "value1",
             "key2": "Hello, World!",
@@ -38,6 +39,7 @@ class TestEnvsh(unittest.TestCase):
         self.assertEqual(envsh.read_env('NONEXISTENT_FLOAT', float, default=3.14), 3.14)
         self.assertEqual(envsh.read_env('NONEXISTENT_INT_ARRAY', list[int], default=[7, 8, 9]), [7, 8, 9])
         self.assertEqual(envsh.read_env('NONEXISTENT_STR_ARRAY', list[str], default=['a', 'b', 'c']), ['a', 'b', 'c'])
+        self.assertEqual(envsh.read_env('NONEXISTENT_FLOAT_ARRAY', list[float], default=[1.1, 2.2]), [1.1, 2.2])
         self.assertEqual(envsh.read_env('NONEXISTENT_DICT_JSON', dict, default={"a": 1}), {"a": 1})
 
     def test_interpolation_and_calculation(self) -> None:
